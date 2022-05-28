@@ -1,0 +1,1 @@
+"""MODELS BE HERE WITH flask-sqlalchemy"""

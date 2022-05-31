@@ -1,10 +1,35 @@
-version: "3"
+version: "3.9"
 
 services:
+
   db:
     image: postgres:14
     restart: always
-    environment:
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/flaskapi
+    depends_on:
+        db:
+          condition: service_healthy
+
+volumes:
+  postgres_data:

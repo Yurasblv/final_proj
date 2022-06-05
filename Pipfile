@@ -16,6 +16,7 @@ SQLAlchemy = "~=1.4.37"
 Werkzeug = "~=2.1.2"
 Flask-Login = "==0.6.1"
 Flask-Ext = "==0.1"
+Faker = "==13.12.0"
 
 [dev-packages]
 

@@ -9,3 +9,4 @@ SQLAlchemy~=1.4.37
 Werkzeug~=2.1.2
 alembic~=1.8.0
 Flask-Login==0.6.1
+Faker==13.12.0

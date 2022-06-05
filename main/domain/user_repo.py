@@ -1,7 +1,5 @@
-import json
-
 from main.domain.crudbase import CRUDBase
-from main.shemas.user_shema import UserSchema, UserAdminSchema
+from main.shemas.user_shema import UserSchema, UserAdminSchema, UserInDB
 from main.models import db, User
 from typing import Optional
 from main.database import UserRequests
@@ -17,6 +15,21 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchema]):
         db_.session.add(db.obj)
         db_.session.commit()
         return db.obj
+
+    def login_user(self, db_: db.session, *, obj_in: UserInDB):
+        id_ = UserRequests.get_id_by_name(obj_in.username)
+        obj = self.get(db_, id_=id_)
+        obj.is_active = True
+        db_.session.add(obj)
+        db_.session.commit()
+        return obj
+
+    def logout_active(self, db_: db.session, *, obj_in: int):
+        obj = self.get(db_, id_=obj_in)
+        obj.is_active = False
+        db_.session.add(obj)
+        db_.session.commit()
+        return obj
 
 
 class CRUDAdmin(CRUDBase[User, UserAdminSchema, UserAdminSchema]):

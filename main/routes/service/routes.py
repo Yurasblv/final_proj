@@ -1,8 +1,7 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify, redirect, url_for
 
 service = Blueprint("service", __name__)
 
-
-@service.route("/films")
+@service.route("/profile")
 def hello_world():
     return "Films module"

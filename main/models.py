@@ -21,8 +21,15 @@ class User(db.Model):
         self.is_admin = is_admin
         self.is_active = is_active
 
-    def set_password(self, pwd):
-        self.password = generate_password_hash(pwd, method="sha256")
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return self.is_active
+
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password, method="sha256")
 
     def check_password(self, password):
         return check_password_hash(self.password, password)

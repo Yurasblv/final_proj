@@ -3,3 +3,8 @@ flask-sqlalchemy==2.5.1
 psycopg2-binary==2.9.3
 python-dotenv==0.20.0
 Flask-Migrate==3.1.0
+pydantic==1.9.1
+black==22.3.0
+SQLAlchemy~=1.4.37
+Werkzeug~=2.1.2
+alembic~=1.8.0

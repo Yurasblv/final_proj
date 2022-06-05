@@ -7,8 +7,10 @@ name = "pypi"
 psycopg2-binary = "==2.9.3"
 python-dotenv = "==0.20.0"
 Flask = "==2.1.2"
-flask-sqlalchemy = "*"
-flask-migrate = "*"
+pydantic = "==1.9.1"
+Flask-SQLAlchemy = "==2.5.1"
+Flask-Migrate = "==3.1.0"
+black = "==22.3.0"
 
 [dev-packages]
 

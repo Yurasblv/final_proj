@@ -19,14 +19,12 @@ def register_user():
     if content_type and "is_admin" not in data.keys():
         try:
             user = user_create(data)
-            redirect(url_for("service.hello_world"))
             return jsonify({"user": user.dict()})
         except ValueError as e:
             raise e  # logger here
     if content_type and "is_admin" in data.keys():
         try:
             admin = admin_create(data)
-            redirect(url_for("service.hello_world"))
             return jsonify({"admin_created": admin.dict()})
         except ValueError as e:
             raise e  # logger here
@@ -39,10 +37,10 @@ def authenticate_user():
     content_type = request.headers.get("Content-Type")
     data = request.json
     if current_user.is_authenticated:
-        return redirect(url_for("service.hello_world"))
+        return jsonify({'already logged': current_user.username})
     if content_type:
         user = auth_user(data)
-        return jsonify({"logged": user.username})
+        return jsonify({user.id: f" is_active={user.is_active}"})
 
 
 @login_required
@@ -52,5 +50,4 @@ def logout():
     if request.method == "POST" and content_type:
         set_active_user(current_user.id)
         logout_user()
-        redirect(url_for("profile.authenticate_user"))
         return jsonify({"user": "Logged out"})

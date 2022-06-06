@@ -11,7 +11,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
-    password = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(100), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=False)
 
@@ -28,7 +28,7 @@ class User(db.Model):
         return self.is_active
 
     def set_password(self, password):
-        self.password = generate_password_hash(password, method="sha256")
+        self.password = generate_password_hash(password, method="sha256", salt_length=5)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)

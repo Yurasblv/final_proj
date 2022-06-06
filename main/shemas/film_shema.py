@@ -9,4 +9,3 @@ class FilmSchema(BaseModel):
     premier_date = date
     rate = conint(ge=0, le=10)
     poster = Optional[str]
-

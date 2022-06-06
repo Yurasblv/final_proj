@@ -25,4 +25,3 @@ class UserInDB(UserSchema):
 
     class Config:
         orm_mode = True
-

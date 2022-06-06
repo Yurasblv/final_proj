@@ -5,7 +5,5 @@ from typing import Optional
 
 
 class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema]):
-
     def create_film(self, db_: db.session, *, obj_in: FilmSchema):
         ...
-

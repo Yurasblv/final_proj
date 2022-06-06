@@ -1,12 +1,11 @@
-from main.models import db, User,Film
+from main.models import db, User, Film
 
 
 class UserRequests:
-
     @staticmethod
     def if_exists(username) -> bool:
         if db.session.query(User).filter_by(username=username).count() >= 1:
-            raise Exception('User Exists')
+            raise Exception("User Exists")
         else:
             return False
 
@@ -20,7 +19,6 @@ class UserRequests:
 
 
 class FilmRequests:
-
     @staticmethod
     def get_films(username):
         return db.session.query(Film).filter_by(username=username).all()

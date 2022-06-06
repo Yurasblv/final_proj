@@ -14,4 +14,3 @@ def auth_user(data) -> Optional[UserInDB]:
 
 def set_active_user(id_):
     return user_repo.logout_active(db, obj_in=id_)
-

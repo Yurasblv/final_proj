@@ -27,7 +27,6 @@ class User(db.Model):
     def is_authenticated(self):
         return self.is_active
 
-
     def set_password(self, password):
         self.password = generate_password_hash(password, method="sha256")
 

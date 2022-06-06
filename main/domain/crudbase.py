@@ -20,14 +20,15 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
     def get(self, db_: db, id_: Any) -> Optional[ModelType]:
         return db_.session.query(self.model).filter(self.model.id == id_).first()
 
-    def get_multi(self, db_: db.session, *, skip: int = 0, limit: int = 10) -> List[ModelType]:
+    def get_multi(
+        self, db_: db.session, *, skip: int = 0, limit: int = 10
+    ) -> List[ModelType]:
         return db_.session.query(self.model).offset(skip).limit(limit).all()
 
     def remove(self, db_: db.session, *, id_: int) -> ModelType:

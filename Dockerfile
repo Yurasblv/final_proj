@@ -7,7 +7,8 @@ COPY requirements.txt /flaskapi
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 COPY . /flaskapi
+RUN chmod u+x ./entrypoint.sh
 ENV FLASK_ENV=development
 ENV FLASK_APP=run.py
 EXPOSE 5000
-CMD ["flask","run","--host=0.0.0.0"]
+ENTRYPOINT ["./entrypoint.sh"]

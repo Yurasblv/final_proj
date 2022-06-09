@@ -18,18 +18,17 @@ class Base:
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
-ListSchemaType = TypeVar("ListSchemaType", bound=BaseModel)
 
 
 class CRUDAbstract(Generic[ModelType, CreateSchemaType, UpdateSchemaType], ABC):
-
     @abstractmethod
     def get(self, db_: db.session, id_: Any) -> Optional[ModelType]:
         ...
 
     @abstractmethod
     def get_multi(
-            self, db_: db.session, *, page=1, per_page: int = 10) -> List[ModelType]:
+        self, db_: db.session, *, page: int, per_page: int
+    ) -> List[ModelType]:
         ...
 
     @abstractmethod
@@ -37,8 +36,13 @@ class CRUDAbstract(Generic[ModelType, CreateSchemaType, UpdateSchemaType], ABC):
         ...
 
     @abstractmethod
-    def update(self, db_: db.session, *, db_obj: ModelType,
-               obj_in: Union[UpdateSchemaType, Dict[str, Any]]) -> ModelType:
+    def update(
+        self,
+        db_: db.session,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+    ) -> ModelType:
         ...
 
     @abstractmethod

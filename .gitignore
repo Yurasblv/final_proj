@@ -2,6 +2,5 @@
 .env
 Pipfile.lock
 __pycache__
-main/cli.py
 migrations
 .gitignore

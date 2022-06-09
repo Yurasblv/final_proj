@@ -1,3 +1,4 @@
+"""Models module with db instances"""
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
@@ -7,6 +8,7 @@ migrate = Migrate()
 
 
 class User(db.Model):
+    """Model of User"""
     __tablename__ = "User"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -22,47 +24,82 @@ class User(db.Model):
         self.is_active = is_active
 
     def get_id(self):
+        """Return user_id"""
         return self.id
 
     def is_authenticated(self):
+        """Return status"""
         return self.is_active
 
     def set_password(self, password):
+        """Set hash for password"""
         self.password = generate_password_hash(password, method="sha256", salt_length=5)
 
     def check_password(self, password):
+        """Check hash for password"""
         return check_password_hash(self.password, password)
+
+    def as_dict(self):
+        """Return dict of model instance"""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 film_genre = db.Table(
     "Film_Genre",
-    db.Column("film_id", db.Integer, db.ForeignKey("Film.id")),
-    db.Column("genre_id", db.Integer, db.ForeignKey("Genre.id")),
+    db.Column(
+        "film_id",
+        db.Integer,
+        db.ForeignKey("Film.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    db.Column(
+        "genre_id",
+        db.Integer,
+        db.ForeignKey("Genre.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
 )
 
 film_director = db.Table(
     "Film_Director",
-    db.Column("film_id", db.Integer, db.ForeignKey("Film.id")),
-    db.Column("director_id", db.Integer, db.ForeignKey("Director.id")),
+    db.Column(
+        "film_id",
+        db.Integer,
+        db.ForeignKey("Film.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
+    db.Column(
+        "director_id",
+        db.Integer,
+        db.ForeignKey("Director.id", onupdate="CASCADE", ondelete="CASCADE"),
+    ),
 )
 
 
 class Genre(db.Model):
+    """Model of Genre"""
     __tablename__ = "Genre"
 
     id = db.Column(db.Integer, primary_key=True)
     genre_name = db.Column(db.String(25))
 
+    def as_dict(self):
+        """Return dict of model instance"""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Director(db.Model):
+    """Model of Director"""
     __tablename__ = "Director"
 
     id = db.Column(db.Integer, primary_key=True)
     director_name = db.Column(db.String(30))
     director_surname = db.Column(db.String(30))
 
+    def as_dict(self):
+        """Return dict of model instance"""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class Film(db.Model):
+    """Model of Film"""
     __tablename__ = "Film"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -73,16 +110,26 @@ class Film(db.Model):
     poster = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     genres = db.relationship(
-        "Genre", secondary=film_genre, backref=db.backref("Film", lazy="dynamic")
+        "Genre",
+        secondary=film_genre,
+        backref=db.backref("Film", lazy="dynamic"),
     )
     directors = db.relationship(
-        "Director", secondary=film_director, backref=db.backref("Film", lazy="dynamic")
+        "Director",
+        secondary=film_director,
+        backref=db.backref("Film", lazy="dynamic"),
     )
 
-    def __init__(self, film_name, movie_description, premier_date, rate, poster, user):
+    def __init__(
+        self, film_name, movie_description, premier_date, rate, poster, user_id
+    ):
         self.film_name = film_name
         self.movie_description = movie_description
         self.premier_date = premier_date
         self.rate = rate
         self.poster = poster
-        self.user = user
+        self.user_id = user_id
+
+    def as_dict(self):
+        """Return dict of model instance"""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

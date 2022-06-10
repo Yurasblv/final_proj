@@ -4,3 +4,4 @@ Pipfile.lock
 __pycache__
 migrations
 .gitignore
+logs

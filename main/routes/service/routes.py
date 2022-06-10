@@ -1,7 +1,7 @@
 """Route module for film operations"""
 import json
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,current_app
 from flask_login import login_required, current_user
 from main.domain.domains_func.film_domain import (
     add_film,
@@ -18,7 +18,8 @@ service = Blueprint("service", __name__)
 def film_add():
     """Route for adding film"""
     if not current_user.is_authenticated:
-        raise "User dont log in,declined!"
+        current_app.logger.info('Declined permission')
+        return "User dont log in,declined!"
     content_type = request.headers.get("Content-Type")
     if content_type and request.method == "POST":
         film = {
@@ -39,23 +40,28 @@ def film_add():
 @service.route("/profile/films/u=<int:film_id>", methods=["PUT"])
 def edit_film(film_id):
     """Route for edit film"""
-    if current_user.is_admin is True or current_user.is_active is True:
-        upd_data = request.get_json()
-        edit = edit_films_info(film_id=film_id, upd_data=upd_data)
-        return jsonify({"Upd": edit})
-    else:
-        return "Exception: User must be admin or logged in"
+    try:
+        current_user.is_admin is True or current_user.is_active is True
+    except Exception as e:
+        current_app.logger.warning({f'{e}'})
+        return "Dont have permissions"
+    upd_data = request.get_json()
+    edit = edit_films_info(film_id=film_id, upd_data=upd_data)
+    return jsonify({"Upd": edit})
+
 
 
 @login_required
 @service.route("/profile/d=<int:film_id>", methods=["DELETE"])
 def delete_film(film_id):
     """Route for removing film"""
-    if current_user.is_admin is True or current_user.is_active is True:
-        dropped_film = drop_db_film(film_id)
-        return jsonify({"Dropped": dropped_film.id})
-    else:
-        return "Exception: User must be admin or logged in"
+    try:
+        current_user.is_admin is True or current_user.is_active is True
+    except Exception as e:
+        current_app.logger.warning({f'{e}'})
+        return "Dont have permissions"
+    dropped_film = drop_db_film(film_id)
+    return jsonify({"Dropped": dropped_film.id})
 
 
 @service.route("/storage/<int:page>", methods=["GET"])

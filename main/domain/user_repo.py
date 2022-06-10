@@ -8,6 +8,7 @@ from typing import Optional
 
 class CRUDUser(CRUDBase[User, UserSchema, UserSchema], CRUDAbstract):
     """Main class for regular user"""
+
     @staticmethod
     def get_id_by_name(username) -> int:
         """Method return a user id if name exists in db"""
@@ -61,6 +62,7 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchema], CRUDAbstract):
 
 class CRUDAdmin(CRUDBase[User, UserAdminSchema, UserAdminSchema], CRUDAbstract):
     """Main class for Admin role"""
+
     def register_admin(
         self, db_: db.session, *, obj_in: UserAdminSchema
     ) -> Optional[User]:

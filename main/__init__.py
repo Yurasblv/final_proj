@@ -3,6 +3,7 @@ from config import DevConfig
 from main.models import db, User, migrate
 from flask_login import LoginManager
 from main.cli import commands
+from main.log_config import log_config
 
 login_manager = LoginManager()
 
@@ -28,6 +29,7 @@ def create_app():
         db.create_all()
 
     register_blueprint(app)
+    log_config(app)
 
     @login_manager.user_loader
     def load_user(id_):
@@ -36,9 +38,5 @@ def create_app():
     @login_manager.unauthorized_handler
     def unauthorized():
         return redirect(url_for("profile.authenticate_user"))
-
-    @app.shell_context_processor
-    def shell_context():
-        return {"app": app, "db": db}
 
     return app

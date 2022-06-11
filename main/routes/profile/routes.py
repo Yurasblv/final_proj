@@ -8,55 +8,44 @@ from flask import current_app
 PROFILE = Blueprint("profile", __name__)
 
 
-@PROFILE.route("/", methods=["POST"])
-def hello_world():
-    """Test route"""
-    return jsonify({"msg": "Hi"})
-
-
 @PROFILE.route("/register", methods=["POST"])
 def register_user():
     """Route for user or admin registration"""
-    content_type = request.headers.get("Content-Type")
-    data = request.json
-    if content_type and "is_admin" not in data.keys():
-        try:
-            user = user_create(data)
-            current_app.logger.info(f"{user.username} was created")
-            return jsonify({"user": user.dict()})
-        except ValueError as e:
-            current_app.logger.info({e})
-
-    if content_type and "is_admin" in data.keys():
-        try:
-            admin = admin_create(data)
-            current_app.logger.info(f"{admin.username} admin role was created")
-            return jsonify({"admin_created": admin.dict()})
-        except ValueError as e:
-            current_app.logger.info({e})
-    else:
-        return TypeError("Set header of content-type (application/json)")
+    if request.method == 'POST':
+        data = request.get_json()
+        if "is_admin" not in data.keys():
+            try:
+                user = user_create(data)
+                current_app.logger.info(f"{user.username} was created")
+                return jsonify({"user": user.dict()})
+            except ValueError as e:
+                current_app.logger.info({e})
+        else:
+            try:
+                admin = admin_create(data)
+                current_app.logger.info(f"{admin.username} admin role was created")
+                return jsonify({"admin_created": admin.dict()})
+            except ValueError as e:
+                current_app.logger.info({e})
 
 
-@PROFILE.route("/user_login", methods=["GET", "POST"])
+@PROFILE.route("/user_login", methods=["POST"])
 def authenticate_user():
     """Route for user or admin log in system"""
-    content_type = request.headers.get("Content-Type")
-    data = request.json
-    if current_user.is_authenticated:
-        return jsonify({"already logged": current_user.username})
-    if content_type:
+    if request.method == 'POST':
+        data = request.json
+        if current_user.is_authenticated:
+            return jsonify({"already logged": current_user.username})
         user = auth_user(data)
         current_app.logger.info(f"{user.username} user logged")
         return jsonify({user.id: f" is_active={user.is_active}"})
 
 
 @login_required
-@PROFILE.route("/logout", methods=["GET", "POST"])
+@PROFILE.route("/logout", methods=["POST"])
 def logout():
     """Route for user or admin log out process"""
-    content_type = request.headers.get("Content-Type")
-    if request.method == "POST" and content_type:
+    if request.method == "POST":
         set_active_user(current_user.id)
         logout_user()
         current_app.logger.info(f"{current_user} logged out")

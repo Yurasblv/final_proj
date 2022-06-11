@@ -9,6 +9,7 @@ migrate = Migrate()
 
 class User(db.Model):
     """Model of User"""
+
     __tablename__ = "User"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +76,7 @@ film_director = db.Table(
 
 class Genre(db.Model):
     """Model of Genre"""
+
     __tablename__ = "Genre"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -87,6 +89,7 @@ class Genre(db.Model):
 
 class Director(db.Model):
     """Model of Director"""
+
     __tablename__ = "Director"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -100,6 +103,7 @@ class Director(db.Model):
 
 class Film(db.Model):
     """Model of Film"""
+
     __tablename__ = "Film"
 
     id = db.Column(db.Integer, primary_key=True)

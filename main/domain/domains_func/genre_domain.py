@@ -1,5 +1,8 @@
 from main.models import db
-from main.domain.genre_repo import GenreBase
-from typing import Optional
-from main.domain.crudabstract import CRUDAbstract
-from main.domain.crudbase import CRUDBase
+from main.domain.genre_repo import genre_repo
+from main.domain.crudabstract import ModelType
+
+
+def set_unknown_genre(film_id, genre) -> ModelType:
+    ans = genre_repo.delete_genre(db_=db, film_id=film_id, genre=genre)
+    return ans

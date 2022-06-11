@@ -6,8 +6,8 @@ from pydantic import BaseModel, constr, validator
 class UserSchema(BaseModel):
     """Schema for regular user data"""
 
-    username: constr(min_length=5, max_length=30)
-    password: constr(min_length=5, max_length=30)
+    username: constr(min_length=1, max_length=30)
+    password: constr(min_length=1, max_length=30)
     is_active: Optional[bool] = None
 
     @validator("password")
@@ -21,11 +21,13 @@ class UserSchema(BaseModel):
 
 class UserAdminSchema(UserSchema):
     """Schema for admin data"""
+
     is_admin: bool = True
 
 
 class UserInDB(UserSchema):
     """Schema for all users data"""
+
     id: Optional[int] = None
 
     class Config:

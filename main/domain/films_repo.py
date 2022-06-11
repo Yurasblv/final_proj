@@ -8,6 +8,7 @@ from typing import List, Dict, Union, Any
 
 class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
     """Main class for repository"""
+
     def create_film(
         self, db_: db.session, *, obj_in: FilmSchema, genres, directors
     ) -> FilmSchema:
@@ -23,7 +24,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         for director in directors:
             db_obj.directors.append(
                 Director(
-                    director_name=director["name"], director_surname=director["surname"]
+                    director_name=director["director_name"], director_surname=director["director_surname"]
                 )
             )
 

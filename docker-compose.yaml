@@ -31,5 +31,20 @@ services:
         db:
           condition: service_healthy
 
+
+  nginx:
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
+    container_name: nginx-flask
+    restart: always
+    depends_on:
+      - app
+    links:
+      - app
+    ports:
+      - "80:80"
+
+
 volumes:
   postgres_data:

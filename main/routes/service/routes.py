@@ -107,3 +107,5 @@ def delete_genre(film_id, genre):
         current_app.logger.info({e})
         return e
     return jsonify({"msg": "Dropped"})
+
+

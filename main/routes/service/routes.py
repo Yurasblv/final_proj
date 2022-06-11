@@ -18,11 +18,10 @@ SERVICE = Blueprint("service", __name__)
 @SERVICE.route("/profile", methods=["POST"])
 def film_add():
     """Route for adding film"""
-    if not current_user.is_authenticated:
-        current_app.logger.info("Declined permission")
-        return "User dont log in,declined!"
-    content_type = request.headers.get("Content-Type")
-    if content_type and request.method == "POST":
+    if request.method == "POST":
+        if not current_user.is_authenticated:
+            current_app.logger.info("Declined permission")
+            raise Exception("User dont log in,declined!")
         film = {
             "film_name": request.json["film_name"],
             "movie_description": request.json["movie_description"],

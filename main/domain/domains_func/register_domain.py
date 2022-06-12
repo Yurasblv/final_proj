@@ -1,6 +1,6 @@
 from main.domain.user_repo import user_repo, admin_repo
 from main.models import db
-from main.shemas.user_shema import UserSchema, UserAdminSchema
+from main.schemas.user_schema import UserSchema, UserAdminSchema
 from typing import Optional
 
 

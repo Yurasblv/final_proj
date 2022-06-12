@@ -2,18 +2,18 @@
 from typing import Optional, List
 from pydantic import BaseModel, conint
 from datetime import date
-from .genre_shema import GenreBase
-from .director_shema import DirectorBase
+from .genre_schema import GenreBase
+from .director_schema import DirectorBase
 
 
 class FilmSchema(BaseModel):
     """Schema data"""
 
-    film_name: Optional[str]
-    movie_description: Optional[str]
-    premier_date: Optional[date]
+    film_name: str
+    movie_description: str
+    premier_date: date
     rate: conint(ge=0, le=10)
-    poster: Optional[str]
+    poster: str
     genres: Optional[List[GenreBase]]
     directors: Optional[List[DirectorBase]]
     user_id: int
@@ -35,10 +35,12 @@ class FilmDeleteSchema(BaseModel):
     id: int
 
 
+# from faker import Faker as f
+# faker = f()
 # input = {
 #     "film_name": "top-gun",
 #     "movie_description": "New chapter of legendary series with Tom Cruise in cast",
-#     "premier_date": "2022-05-10",
+#     "premier_date": faker.date_object(),
 #     "rate": 10,
 #     "poster": "poster.jpeg",
 #     "genres": [
@@ -56,4 +58,4 @@ class FilmDeleteSchema(BaseModel):
 # }
 #
 # s = FilmSchema(**input)
-# print(s)
+# print(type(s.premier_date))

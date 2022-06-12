@@ -1,6 +1,6 @@
 from main.domain.crudbase import CRUDBase
 from main.domain.crudabstract import ModelType, CRUDAbstract
-from main.shemas.film_shema import GenreBase
+from main.schemas.film_schema import GenreBase
 from main.models import db, Genre, Film
 from typing import Optional
 

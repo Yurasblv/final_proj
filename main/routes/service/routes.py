@@ -9,9 +9,42 @@ from main.domain.domains_func.film_domain import (
     drop_db_film,
     get_list_of_films,
     edit_films_info,
+    get_list_of_films_by_genre,
+    get_list_of_films_by_director,
+    get_list_of_films_by_date,
 )
 
 SERVICE = Blueprint("service", __name__)
+
+
+@SERVICE.route("/storage/<int:page>", methods=["GET"])
+def get_films(page):
+    """Route for list films"""
+    film_list = get_list_of_films(page)
+    return json.dumps(film_list, indent=3, sort_keys=False, default=str)
+
+
+@SERVICE.route("/storage/<int:page>/filter", methods=["GET", "POST"])
+def get_film_by_filter(page):
+    """Filter films with addition settings"""
+    if "genre" in request.json.keys():
+        films_query = get_list_of_films_by_genre(page, request.json["genre"])
+        return json.dumps(films_query, indent=3, sort_keys=False, default=str)
+    if "director" in request.json.keys():
+        films_query = get_list_of_films_by_director(
+            page=page, request_json=request.json["director"]
+        )
+        return json.dumps(films_query, indent=3, sort_keys=False, default=str)
+    if "left_date" and "right_date" in request.json.keys():
+        films_query = get_list_of_films_by_date(
+            page,
+            left_date=request.json["left_date"],
+            right_date=request.json["right_date"],
+        )
+        return json.dumps(films_query, indent=3, sort_keys=False, default=str)
+    else:
+        current_app.logger.info("Bad Key")
+        return jsonify({"msg": "Incorrect request"})
 
 
 @login_required
@@ -63,13 +96,6 @@ def delete_film(film_id):
     return jsonify({"Dropped": dropped_film.id})
 
 
-@SERVICE.route("/storage/<int:page>", methods=["GET"])
-def get_films(page):
-    """Route for list films"""
-    film_list = get_list_of_films(page)
-    return json.dumps(film_list, indent=3, sort_keys=False, default=str)
-
-
 @login_required
 @SERVICE.route(
     "/profile/film/<int:film_id>/director/<int:director>", methods=["PUT", "DELETE"]
@@ -106,5 +132,3 @@ def delete_genre(film_id, genre):
         current_app.logger.info({e})
         return e
     return jsonify({"msg": "Dropped"})
-
-

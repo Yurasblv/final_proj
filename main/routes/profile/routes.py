@@ -11,7 +11,7 @@ PROFILE = Blueprint("profile", __name__)
 @PROFILE.route("/register", methods=["POST"])
 def register_user():
     """Route for user or admin registration"""
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.get_json()
         if "is_admin" not in data.keys():
             try:
@@ -32,7 +32,7 @@ def register_user():
 @PROFILE.route("/user_login", methods=["POST"])
 def authenticate_user():
     """Route for user or admin log in system"""
-    if request.method == 'POST':
+    if request.method == "POST":
         data = request.json
         if current_user.is_authenticated:
             return jsonify({"already logged": current_user.username})

@@ -1,7 +1,7 @@
 """Repository For Films"""
 from main.domain.crudbase import CRUDBase
 from main.domain.crudabstract import CRUDAbstract, ModelType
-from main.shemas.film_shema import FilmSchema, FilmDeleteSchema
+from main.schemas.film_schema import FilmSchema, FilmDeleteSchema
 from main.models import db, Film, Director, Genre
 from typing import List, Dict, Union, Any
 
@@ -24,7 +24,8 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         for director in directors:
             db_obj.directors.append(
                 Director(
-                    director_name=director["director_name"], director_surname=director["director_surname"]
+                    director_name=director["director_name"],
+                    director_surname=director["director_surname"],
                 )
             )
 
@@ -68,6 +69,46 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         """Return list of instances"""
         schema_list = super().get_multi(db_=db_, page=page)
         return schema_list
+
+    def list_film_by_genre(self, *, page: int, request_json) -> List[FilmSchema]:
+        """Return list of instances"""
+        record_query = (
+            self.model.query.filter(self.model.genres)
+            .filter(Genre.genre_name == request_json)
+            .paginate(page, 10, False)
+            .items
+        )
+        return record_query
+
+    def list_film_by_director(
+        self, *, page: int, request_json: list
+    ) -> List[FilmSchema]:
+        """Return list of instances"""
+        for data in request_json:
+            record_query = (
+                self.model.query.filter(self.model.directors)
+                .filter(
+                    Director.director_name == data["director_name"],
+                    Director.director_surname == data["director_surname"],
+                )
+                .paginate(page, 10, False)
+                .items
+            )
+            return record_query
+
+    def list_film_by_date(
+        self, *, page, left_date, right_date
+    ) -> List[FilmSchema]:  # type :ignore
+        """Return list of instances"""
+        record_query = (
+            self.model.query.filter(self.model.premier_date >= left_date)
+            .filter(self.model.premier_date <= right_date)
+            .order_by(self.model.premier_date)
+            .paginate(page, 10, False)
+            .items
+        )
+
+        return record_query
 
 
 film_repo = FilmsCRUD(Film)

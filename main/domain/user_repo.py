@@ -1,7 +1,7 @@
 """Repository for User CRUD"""
 from main.domain.crudbase import CRUDBase
 from main.domain.crudabstract import ModelType, CRUDAbstract
-from main.shemas.user_shema import UserSchema, UserAdminSchema, UserInDB
+from main.schemas.user_schema import UserSchema, UserAdminSchema, UserInDB
 from main.models import db, User
 from typing import Optional
 

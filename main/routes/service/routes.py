@@ -24,7 +24,7 @@ def get_films(page):
     return json.dumps(film_list, indent=3, sort_keys=False, default=str)
 
 
-@SERVICE.route("/storage/<int:page>/filter", methods=["GET", "POST"])
+@SERVICE.route("/storage/<int:page>/filter", methods=["GET"])
 def get_film_by_filter(page):
     """Filter films with addition settings"""
     if "genre" in request.json.keys():

@@ -10,7 +10,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
     """Main class for repository"""
 
     def create_film(
-        self, db_: db.session, *, obj_in: FilmSchema, genres, directors
+            self, db_: db.session, *, obj_in: FilmSchema, genres, directors
     ) -> FilmSchema:
         """Creates film model"""
         db_obj = self.model(
@@ -36,11 +36,11 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         return FilmSchema.from_orm(obj_in)
 
     def update_film(
-        self,
-        db_: db.session,
-        *,
-        upd_data: Union[FilmSchema, Dict[str, Any]],
-        film_id: int,
+            self,
+            db_: db.session,
+            *,
+            upd_data: Union[FilmSchema, Dict[str, Any]],
+            film_id: int,
     ) -> ModelType:
         """Change info in film model"""
         try:
@@ -81,7 +81,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         return record_query
 
     def list_film_by_director(
-        self, *, page: int, request_json: list
+            self, *, page: int, request_json: list
     ) -> List[FilmSchema]:
         """Return list of instances"""
         for data in request_json:
@@ -97,7 +97,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
             return record_query
 
     def list_film_by_date(
-        self, *, page, left_date, right_date
+            self, *, page, left_date, right_date
     ) -> List[FilmSchema]:  # type :ignore
         """Return list of instances"""
         record_query = (
@@ -109,6 +109,18 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         )
 
         return record_query
+
+    def list_film_by_sort(self, *, page: int, field: str):
+        if field == 'premier_date':
+            record_query = (
+                self.model.query.order_by(self.model.premier_date.asc()).paginate(page, 10, False).items
+            )
+            return record_query
+        if field == 'rate':
+            record_query = (
+                self.model.query.order_by(self.model.rate.asc()).paginate(page, 10, False).items
+            )
+            return record_query
 
 
 film_repo = FilmsCRUD(Film)

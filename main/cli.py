@@ -34,7 +34,7 @@ def seed_films():
         db_obj = {
             "film_name": f"{' '.join(FAKER_INSTANCE.words(3)).capitalize()}",
             "movie_description": FAKER_INSTANCE.sentence(8),
-            "premier_date": FAKER_INSTANCE.date(),
+            "premier_date": FAKER_INSTANCE.date_object(),
             "rate": random.randint(1, 10),
             "poster": f"{FAKER_INSTANCE.text()}/{FAKER_INSTANCE.word()}",
             "user_id": f"{random.randint(1,100)}",

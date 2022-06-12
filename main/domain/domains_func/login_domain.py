@@ -1,7 +1,7 @@
 from flask_login import login_user
 from main.models import db
 from main.domain.user_repo import user_repo
-from main.shemas.user_shema import UserInDB
+from main.schemas.user_schema import UserInDB
 from typing import Optional
 
 

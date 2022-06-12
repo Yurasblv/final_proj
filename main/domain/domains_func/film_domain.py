@@ -1,8 +1,8 @@
 from main.models import db
 from main.domain.films_repo import film_repo
-from typing import Optional, Iterable
+from typing import Optional, List
 from main.domain.crudabstract import ModelType
-from main.shemas.film_shema import FilmSchema, FilmDeleteSchema, FilmListSchema
+from main.schemas.film_schema import FilmSchema, FilmDeleteSchema, FilmListSchema
 
 
 def add_film(film, directors, genres) -> Optional[ModelType]:
@@ -16,8 +16,28 @@ def drop_db_film(id_):
     return film_repo.delete_film(db, obj_in=FilmDeleteSchema(**{"id": id_}))
 
 
-def get_list_of_films(page: int) -> Iterable:
+def get_list_of_films(page: int) -> List[ModelType]:
     db_obj = film_repo.list_films(db, page=page)
+    film_gen = [FilmListSchema.from_orm(film).dict() for film in db_obj]
+    return film_gen
+
+
+def get_list_of_films_by_genre(page: int, request_json) -> List[ModelType]:
+    db_obj = film_repo.list_film_by_genre(page=page, request_json=request_json)
+    film_gen = [FilmListSchema.from_orm(film).dict() for film in db_obj]
+    return film_gen
+
+
+def get_list_of_films_by_director(page: int, request_json) -> List[ModelType]:
+    db_obj = film_repo.list_film_by_director(page=page, request_json=request_json)
+    film_gen = [FilmListSchema.from_orm(film).dict() for film in db_obj]
+    return film_gen
+
+
+def get_list_of_films_by_date(page: int, left_date: str, right_date: str) -> List[ModelType]:
+    db_obj = film_repo.list_film_by_date(
+        page=page, left_date=left_date, right_date=right_date
+    )
     film_gen = [FilmListSchema.from_orm(film).dict() for film in db_obj]
     return film_gen
 

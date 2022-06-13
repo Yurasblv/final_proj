@@ -12,6 +12,7 @@ from main.domain.domains_func.film_domain import (
     get_list_of_films_by_genre,
     get_list_of_films_by_director,
     get_list_of_films_by_date,
+    get_list_sorted_by_field,
 )
 
 SERVICE = Blueprint("service", __name__)
@@ -45,6 +46,18 @@ def get_film_by_filter(page):
     else:
         current_app.logger.info("Bad Key")
         return jsonify({"msg": "Incorrect request"})
+
+
+@SERVICE.route("/storage/<int:page>/sort", methods=["GET"])
+def get_film_by_sorting(page):
+    """Sort films with addition settings"""
+    field = request.json["sort"]
+    if "premier_date" == field or "rate" == field:
+        sort_result = get_list_sorted_by_field(page=page, field=field)
+        return json.dumps(sort_result, indent=3, sort_keys=False, default=str)
+    else:
+        current_app.logger.info("Wrong key for sort")
+        return jsonify({"msg": "Wrong key"})
 
 
 @login_required

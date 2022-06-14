@@ -9,6 +9,7 @@ class DirectorsCRUD(CRUDBase[Director, DirectorBase, DirectorBase], CRUDAbstract
     def delete_director(
         self, db_: db.session, *, film_id: int, director: int
     ) -> Optional[ModelType]:
+        """Drop director instance from db"""
         film = Film.query.filter_by(id=film_id).first()
         for director_obj in film.directors:
             if director_obj.id == director:

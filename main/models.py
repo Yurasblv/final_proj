@@ -2,12 +2,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 migrate = Migrate()
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """Model of User"""
 
     __tablename__ = "User"
@@ -16,21 +17,18 @@ class User(db.Model):
     username = db.Column(db.String(30), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password, is_admin=False, is_active=False):
+    def __init__(self, username, password, is_admin=False):
         self.username = username
         self.password = password
         self.is_admin = is_admin
-        self.is_active = is_active
 
     def get_id(self):
         """Return user_id"""
         return self.id
 
-    def is_authenticated(self):
-        """Return status"""
-        return self.is_active
+    def is_active(self):
+        return True
 
     def set_password(self, password):
         """Set hash for password"""

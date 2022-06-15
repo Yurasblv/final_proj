@@ -16,7 +16,7 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchema], CRUDAbstract):
             id_ = db.session.query(User).filter_by(username=username).first().id
             return id_
         except Exception:
-            raise "User not found"
+            raise ValueError("User not found")
 
     def register_user(
         self, db_: db.session, *, obj_in: UserSchema
@@ -31,7 +31,6 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchema], CRUDAbstract):
             db.obj = self.model(
                 username=obj_in.username,
                 password=obj_in.password,
-                is_active=obj_in.is_active,
             )
             db.obj.set_password(db.obj.password)
             db_.session.add(db.obj)
@@ -42,22 +41,13 @@ class CRUDUser(CRUDBase[User, UserSchema, UserSchema], CRUDAbstract):
         """Login user"""
         id_ = CRUDUser.get_id_by_name(obj_in.username)
         obj = self.get(db_, id_=id_)
-        try:
-            obj.check_password(obj_in.password)
-        except ValueError:
-            raise "Password not valid"
-        obj.is_active = True
-        db_.session.add(obj)
-        db_.session.commit()
-        return obj
-
-    def logout_active(self, db_: db.session, *, obj_in: int):
-        """Log out user with changing status"""
-        obj = self.get(db_, id_=obj_in)
-        obj.is_active = False
-        db_.session.add(obj)
-        db_.session.commit()
-        return obj
+        if obj.check_password(obj_in.password):
+            obj.is_active = True
+            db_.session.add(obj)
+            db_.session.commit()
+            return obj
+        else:
+            raise ValueError("Password is not valid")
 
 
 class CRUDAdmin(CRUDBase[User, UserAdminSchema, UserAdminSchema], CRUDAbstract):
@@ -76,7 +66,6 @@ class CRUDAdmin(CRUDBase[User, UserAdminSchema, UserAdminSchema], CRUDAbstract):
             db.obj = self.model(
                 username=obj_in.username,
                 password=obj_in.password,
-                is_active=obj_in.is_active,
                 is_admin=obj_in.is_admin,
             )
             db.obj.set_password(db.obj.password)

@@ -1,3 +1,4 @@
+"""Abstract class for CRUD repository """
 from abc import ABC, abstractmethod
 from main.models import db
 from typing import Any, Dict, List, Optional, TypeVar, Union, Generic
@@ -7,6 +8,8 @@ from sqlalchemy.ext.declarative import as_declarative, declared_attr
 
 @as_declarative()
 class Base:
+    """Declarative class for DB model"""
+
     id: int
     __name__: str
 
@@ -21,6 +24,8 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CRUDAbstract(Generic[ModelType, CreateSchemaType, UpdateSchemaType], ABC):
+    """ABC CLASS"""
+
     @abstractmethod
     def get(self, db_: db.session, id_: Any) -> Optional[ModelType]:
         ...

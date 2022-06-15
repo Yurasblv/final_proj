@@ -33,29 +33,3 @@ class FilmDeleteSchema(BaseModel):
     """Schema for delete Film data"""
 
     id: int
-
-
-# from faker import Faker as f
-# faker = f()
-# input = {
-#     "film_name": "top-gun",
-#     "movie_description": "New chapter of legendary series with Tom Cruise in cast",
-#     "premier_date": faker.date_object(),
-#     "rate": 10,
-#     "poster": "poster.jpeg",
-#     "genres": [
-#         {
-#             "genre_name": "action"
-#         },
-#     ],
-#     "directors": [
-#         {
-#             "director_name": "robby",
-#             "director_surname": "robbinson"
-#         },
-#     ],
-#     "user_id": 1
-# }
-#
-# s = FilmSchema(**input)
-# print(type(s.premier_date))

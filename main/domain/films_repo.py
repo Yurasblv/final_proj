@@ -1,6 +1,6 @@
 """Repository For Films"""
 from main.domain.crudbase import CRUDBase
-from main.domain.crudabstract import CRUDAbstract, ModelType
+from main.domain.crudabstract import CRUDAbstract
 from main.schemas.film_schema import FilmSchema, FilmDeleteSchema
 from main.models import db, Film, Director, Genre
 from typing import List, Dict, Union, Any
@@ -10,9 +10,10 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
     """Main class for repository"""
 
     def create_film(
-            self, db_: db.session, *, obj_in: FilmSchema, genres, directors
+        self, db_: db.session, *, obj_in: FilmSchema, genres, directors
     ) -> FilmSchema:
         """Creates film model"""
+
         db_obj = self.model(
             user_id=obj_in.user_id,
             film_name=obj_in.film_name,
@@ -28,7 +29,6 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
                     director_surname=director["director_surname"],
                 )
             )
-
         for genre in genres:
             db_obj.genres.append(Genre(genre_name=genre["genre_name"]))
         db_.session.add(db_obj)
@@ -36,12 +36,12 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         return FilmSchema.from_orm(obj_in)
 
     def update_film(
-            self,
-            db_: db.session,
-            *,
-            upd_data: Union[FilmSchema, Dict[str, Any]],
-            film_id: int,
-    ) -> ModelType:
+        self,
+        db_: db.session,
+        *,
+        upd_data: Union[FilmSchema, Dict[str, Any]],
+        film_id: int,
+    ) -> FilmSchema:
         """Change info in film model"""
         try:
             db_obj = self.get(db_, id_=film_id)
@@ -53,7 +53,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
                 else:
                     update_data = upd_data.dict(exclude_unset=True)
                 super().update(db_, db_obj=db_obj, obj_in=update_data)
-                return self.get(db_, id_=film_id).as_dict()
+                return FilmSchema.from_orm(self.get(db_, id_=film_id))
         except ValueError:
             print("<< Film not found >>")
 
@@ -62,42 +62,41 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
         try:
             super().remove(db_, id_=obj_in.id)
             return obj_in
-        except Exception:
-            raise ValueError(f"\n<< Film not in database >>")
+        except ValueError:
+            return None
 
     def list_films(self, db_: db.session, *, page: int) -> List[FilmSchema]:
         """Return list of instances"""
         schema_list = super().get_multi(db_=db_, page=page)
         return schema_list
 
-    def list_film_by_genre(self, *, page: int, request_json) -> List[FilmSchema]:
+    def list_film_by_genre(self, *, page: int, request_json: dict) -> List[FilmSchema]:
         """Return list of instances"""
         record_query = (
             self.model.query.filter(self.model.genres)
-            .filter(Genre.genre_name == request_json)
+            .filter(Genre.genre_name == request_json["genre_name"])
             .paginate(page, 10, False)
             .items
         )
         return record_query
 
     def list_film_by_director(
-            self, *, page: int, request_json: list
+        self, *, page: int, request_json: dict
     ) -> List[FilmSchema]:
         """Return list of instances"""
-        for data in request_json:
-            record_query = (
-                self.model.query.filter(self.model.directors)
-                .filter(
-                    Director.director_name == data["director_name"],
-                    Director.director_surname == data["director_surname"],
-                )
-                .paginate(page, 10, False)
-                .items
+        record_query = (
+            self.model.query.filter(self.model.directors)
+            .filter(
+                Director.director_name == request_json["director_name"],
+                Director.director_surname == request_json["director_surname"],
             )
-            return record_query
+            .paginate(page, 10, False)
+            .items
+        )
+        return record_query
 
     def list_film_by_date(
-            self, *, page, left_date, right_date
+        self, *, page, left_date, right_date
     ) -> List[FilmSchema]:  # type :ignore
         """Return list of instances"""
         record_query = (
@@ -107,18 +106,22 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDAbstract):
             .paginate(page, 10, False)
             .items
         )
-
         return record_query
 
     def list_film_by_sort(self, *, page: int, field: str):
-        if field == 'premier_date':
+        """Sort list of instances by field"""
+        if field == "premier_date":
             record_query = (
-                self.model.query.order_by(self.model.premier_date.asc()).paginate(page, 10, False).items
+                self.model.query.order_by(self.model.premier_date.asc())
+                .paginate(page, 10, False)
+                .items
             )
             return record_query
-        if field == 'rate':
+        if field == "rate":
             record_query = (
-                self.model.query.order_by(self.model.rate.asc()).paginate(page, 10, False).items
+                self.model.query.order_by(self.model.rate.asc())
+                .paginate(page, 10, False)
+                .items
             )
             return record_query
 

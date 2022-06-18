@@ -5,3 +5,5 @@ __pycache__
 migrations
 .gitignore
 logs
+.pytest_cache
+.env_test

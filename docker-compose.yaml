@@ -28,8 +28,8 @@ services:
     volumes:
       - ./:/flaskapi
     depends_on:
-        db:
-          condition: service_healthy
+      db:
+        condition: service_healthy
 
 
   nginx:

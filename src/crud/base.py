@@ -1,7 +1,7 @@
 """Base CRUD repository"""
 from typing import Any, Optional, Union, Dict, Generic, Type, List
-from main.models import db
-from main.domain.crudabstract import (
+from src.models import db
+from src.crud.abs import (
     CRUDAbstract,
     ModelType,
     CreateSchemaType,
@@ -10,6 +10,8 @@ from main.domain.crudabstract import (
 
 
 class CRUDBase(CRUDAbstract, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+    """BASE CRUD REPO CLASS"""
+
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
@@ -27,7 +29,7 @@ class CRUDBase(CRUDAbstract, Generic[ModelType, CreateSchemaType, UpdateSchemaTy
         return record_query.items
 
     def create(
-        self, db_: db.session, obj_in: Union[CreateSchemaType, Dict[str, Any]]
+        self, db_: db.session, obj_in: Union[CreateSchemaType, Dict[str, Any]], **kwargs
     ) -> ModelType:
         """Create instance"""
         db_obj = self.model(**obj_data)  # type: ignore
@@ -53,11 +55,11 @@ class CRUDBase(CRUDAbstract, Generic[ModelType, CreateSchemaType, UpdateSchemaTy
                 setattr(db_obj, field, update_data[field])
         db_.session.add(db_obj)
         db_.session.commit()
-        return self.model
+        return db_obj
 
     def remove(self, db_: db.session, *, id_: int) -> ModelType:
         """Delete instance"""
-        obj = db_.session.query(self.model).get(id_)
-        db_.session.delete(obj)
+        db_obj = db_.session.query(self.model).get(id_)
+        db_.session.delete(db_obj)
         db_.session.commit()
-        return obj
+        return db_obj

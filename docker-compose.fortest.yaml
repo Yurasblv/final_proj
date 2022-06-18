@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+
+  testdb:
+    image: postgres:14
+    restart: always
+    env_file:
+      - .env_test
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U test -d testdata" ]
+
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - FLASK_ENV=testing
+      - FLASK_DEBUG=1
+    env_file:
+      - .env_test
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/flaskapi
+    depends_on:
+      testdb:
+        condition: service_healthy

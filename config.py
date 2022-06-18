@@ -3,7 +3,6 @@ from os import path, getenv
 from dotenv import load_dotenv
 
 basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, ".env"), override=True)
 
 
 class Config:
@@ -17,6 +16,19 @@ class Config:
 class DevConfig(Config):
     """Development config."""
 
+    load_dotenv(path.join(basedir, ".env"), override=True)
     SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI")
     SECRET_KEY = getenv("SECRET_KEY")
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+
+class TestConfig(Config):
+    """Test config."""
+
+    load_dotenv(path.join(basedir, ".env_test"), override=True)
+    DEBUG = getenv("DEBUG")
+    TESTING = getenv("TESTING")
+    ENV = getenv("ENV")
+    SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI")
+    SECRET_KEY = getenv("SECRET_KEY")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

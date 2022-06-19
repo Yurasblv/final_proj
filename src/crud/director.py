@@ -1,5 +1,5 @@
 from src.crud.base import CRUDBase
-from src.crud.abs import ModelType, CRUDAbstract
+from src.crud.abs import CRUDAbstract
 from src.schemas.film import DirectorBase
 from src.models import db, Director, Film
 from src.use_case import unknown_director
@@ -14,8 +14,7 @@ class DirectorsCRUD(CRUDBase[Director, DirectorBase, DirectorBase], CRUDAbstract
         film.directors.append(director)
         db_.session.add(film)
         db_.session.commit()
-        data = " ".join([item.director_name for item in film.directors])
-        return data
+        return " ".join([item.director_name for item in film.directors])
 
 
 director_repo = DirectorsCRUD(Director)

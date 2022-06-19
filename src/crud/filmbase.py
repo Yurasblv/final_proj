@@ -27,6 +27,12 @@ class CRUDFilmBase(ABC, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """ABS FILM CRUD"""
 
     @abstractmethod
+    def list_all(
+        self, db_: db.session, *, film_name: str, page: int = 1, per_page: int = 10
+    ) -> List:
+        ...
+
+    @abstractmethod
     def list_film_by_genre(self, *, page: int, request_json: dict) -> List[BaseModel]:
         ...
 

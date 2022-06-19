@@ -34,7 +34,7 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDFilmBase):
         db_: db.session,
         *,
         db_obj: ModelType,
-        obj_in: Union[FilmSchema, Dict[str, Any]]
+        obj_in: Union[FilmSchema, Dict[str, Any]],
     ) -> FilmSchema:
         """Change info in film model"""
         for field in db_obj.as_dict().keys():
@@ -52,9 +52,16 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDFilmBase):
                 db_.session.commit()
                 return FilmSchema.from_orm(db_obj)
 
-    def get_multi(self, db_: db.session, *, page: int = 1, per_page: int = 10) -> List:
-        schema_list = super().get_multi(db_=db_, page=page)
-        return [FilmSchema.from_orm(film).dict() for film in schema_list]
+    def list_all(
+        self, db_: db.session, *, film_name: str, page: int = 1, per_page: int = 10
+    ) -> List:
+        record_query = (
+            self.model.query.filter(self.model.film_name.like(f"%{film_name}%"))
+            .order_by(self.model.film_name)
+            .paginate(page, per_page, False)
+            .items
+        )
+        return [FilmSchema.from_orm(film).dict() for film in record_query]
 
     def remove(self, db_: db.session, *, id_: int):
         """Delete instance from db"""

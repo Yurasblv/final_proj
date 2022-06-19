@@ -23,7 +23,6 @@ apimethods = Namespace(
     "personal", path="/profile", description="APIs Film RESTful methods"
 )
 
-
 director_model = apifilms.model(
     "Director",
     {
@@ -74,11 +73,14 @@ film_create = apimethods.model(
 )
 
 
-@apifilms.route("/<int:page>", methods=["GET"])
+@apifilms.route("/", methods=["GET"])
+@apifilms.doc(params={"film_name": "Name of Film", "page": "page_num"})
 class ListFilms(Resource):
-    def get(self, page):
+    def get(self):
         """Route for list all with pagination films"""
-        film_list = get_list_of_films(page, repo=film_repo)
+        film_name = request.args.get("film_name").capitalize()
+        page = int(request.args.get("page"))
+        film_list = get_list_of_films(page, film_name, repo=film_repo)
         return jsonify(film_list)
 
 
@@ -152,7 +154,7 @@ class FilmCreate(Resource):
                 current_app.logger.info("Declined permission")
                 raise Exception("User dont log in,declined!")
             film = {
-                "film_name": request.json["film_name"],
+                "film_name": request.json["film_name"].capitalize(),
                 "movie_description": request.json["movie_description"],
                 "premier_date": request.json["premier_date"],
                 "rate": request.json["rate"],

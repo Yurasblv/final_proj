@@ -26,9 +26,9 @@ def drop_db_film(repo: CRUDAbstract, id_: int):
     return repo.remove(db, id_=id_)
 
 
-def get_list_of_films(page: int, repo: CRUDAbstract) -> List:
+def get_list_of_films(page: int, film_name: str, repo: CRUDFilmBase) -> List:
     """Get list object from Film database"""
-    return repo.get_multi(db_=db, page=page, per_page=10)
+    return repo.list_all(db_=db, film_name=film_name, page=page, per_page=10)
 
 
 def get_list_of_films_by_genre(page: int, request_json, repo: CRUDFilmBase) -> List:

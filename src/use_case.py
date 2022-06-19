@@ -14,6 +14,7 @@ def get_id_by_name(username) -> int:
 
 
 def search_user_db(obj_in: CreateSchemaType) -> Union[ModelType, Exception]:
+    """Method return user model if it exists in db"""
     if db.session.query(User).filter_by(username=obj_in.username).count() >= 1:
         raise ValueError("User Exists")
     else:
@@ -21,6 +22,7 @@ def search_user_db(obj_in: CreateSchemaType) -> Union[ModelType, Exception]:
 
 
 def search_director_in_db(directors: List) -> Director:
+    """Method return director model if it exists in db"""
     for director in directors:
         db_obj = (
             db.session.query(Director)
@@ -45,6 +47,7 @@ def search_director_in_db(directors: List) -> Director:
 
 
 def search_genre_in_db(genres: List) -> Director:
+    """Method return genre model if it exists in db"""
     for genre in genres:
         db_obj = (
             db.session.query(Genre)
@@ -62,6 +65,7 @@ def search_genre_in_db(genres: List) -> Director:
 
 
 def unknown_director(db_: db.session) -> Director:
+    """Method returns unknown director model"""
     return (
         db_.session.query(Director)
         .filter(
@@ -75,4 +79,5 @@ def unknown_director(db_: db.session) -> Director:
 
 
 def unknown_genre(db_: db.session) -> Director:
+    """Method returns unknown genre model"""
     return db_.session.query(Genre).filter(Genre.genre_name == "unknown").first()

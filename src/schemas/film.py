@@ -2,8 +2,8 @@
 from typing import Optional, List
 from pydantic import BaseModel, conint
 from datetime import date
-from .genre_schema import GenreBase
-from .director_schema import DirectorBase
+from .genre import GenreBase
+from .director import DirectorBase
 
 
 class FilmSchema(BaseModel):
@@ -27,9 +27,3 @@ class FilmListSchema(FilmSchema):
 
     class Config:
         orm_mode = True
-
-
-class FilmDeleteSchema(BaseModel):
-    """Schema for delete Film data"""
-
-    id: int

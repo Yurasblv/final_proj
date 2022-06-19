@@ -1,11 +1,13 @@
 """Route module for film operations"""
-import json
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Resource, Namespace, fields
 from flask import request, jsonify, current_app
 from flask_login import login_required, current_user
-from main.domain.domains_func.genre_domain import set_unknown_genre
-from main.domain.domains_func.director_domain import set_unknown_director
-from main.domain.domains_func.film_domain import (
+from src.crud.film import film_repo
+from src.crud.director import director_repo
+from src.services.genre import set_unknown_genre
+from src.crud.genre import genre_repo
+from src.services.director import delete_director
+from src.services.film import (
     add_film,
     drop_db_film,
     get_list_of_films,
@@ -16,16 +18,10 @@ from main.domain.domains_func.film_domain import (
     get_list_sorted_by_field,
 )
 
-apifilms = Namespace("films", description="APIs Film RESTful methods")
-
-
-@apifilms.route("/<int:page>", methods=["GET"])
-class ListFilms(Resource):
-    @apifilms.param("page", "Enter page num")
-    def get(self, page):
-        """Route for list all with pagination films"""
-        film_list = get_list_of_films(page)
-        return json.dumps(film_list, indent=3, sort_keys=False, default=str)
+apifilms = Namespace("general", description="APIs Film RESTful methods")
+apimethods = Namespace(
+    "personal", path="/profile", description="APIs Film RESTful methods"
+)
 
 
 director_model = apifilms.model(
@@ -43,63 +39,25 @@ genre_model = apifilms.model(
     },
 )
 
-filters = apifilms.model(
-    "Filter",
+filter_director = apifilms.model(
+    "Filter_Director",
     {
         "director": fields.Nested(model=director_model),
+    },
+)
+filter_genre = apifilms.model(
+    "Filter_Genre",
+    {
         "genre": fields.Nested(model=genre_model),
-        "left_date": fields.Date(default=None),
-        "right_date": fields.Date(default=None),
     },
 )
 
-
-@apifilms.route("/<int:page>/filter", methods=["POST"])
-class ListFilteredFilms(Resource):
-    @apifilms.doc(body=filters)
-    @login_required
-    def post(self, page):
-        """Filter films by genre,date and director"""
-        if "genre" in request.json.keys():
-            films_query = get_list_of_films_by_genre(page, request.json["genre"])
-            return json.dumps(films_query, indent=3, sort_keys=False, default=str)
-        if "director" in request.json.keys():
-            films_query = get_list_of_films_by_director(
-                page=page, request_json=request.json["director"]
-            )
-            return json.dumps(films_query, indent=3, sort_keys=False, default=str)
-        if "left_date" and "right_date" in request.json.keys():
-            films_query = get_list_of_films_by_date(
-                page,
-                left_date=request.json["left_date"],
-                right_date=request.json["right_date"],
-            )
-            return json.dumps(films_query, indent=3, sort_keys=False, default=str)
-        else:
-            current_app.logger.info("Bad Key")
-            return jsonify({"msg": "Incorrect request"})
-
-
-sorts = apifilms.model("Sort", {"premier_date": fields.Date(), "rate": fields.Integer})
-
-
-@apifilms.route("/<int:page>/sort", methods=["POST"])
-class ListSortedFilms(Resource):
-    @apifilms.doc(body=sorts)
-    @login_required
-    def post(self, page):
-        """Sort films by premier date and rate"""
-        field = request.json["sort"]
-        if "premier_date" or "rate" in field:
-            sort_result = get_list_sorted_by_field(page=page, field=field)
-            return json.dumps(sort_result, indent=3, sort_keys=False, default=str)
-        else:
-            current_app.logger.info("Wrong key for sort")
-            return jsonify({"msg": "Wrong key"})
-
-
-apimethods = Namespace(
-    "profile", path="/profile", description="APIs Film RESTful methods"
+filter_date = apifilms.model(
+    "Filter_Date",
+    {
+        "left_date": fields.Date(default=None),
+        "right_date": fields.Date(default=None),
+    },
 )
 
 film_create = apimethods.model(
@@ -112,9 +70,75 @@ film_create = apimethods.model(
         "poster": fields.Url(example="abc.com/"),
         "genres": fields.List(fields.Nested(model=genre_model)),
         "directors": fields.List(fields.Nested(model=director_model)),
-        "user_id": fields.Integer(example=1),
     },
 )
+
+
+@apifilms.route("/<int:page>", methods=["GET"])
+class ListFilms(Resource):
+    def get(self, page):
+        """Route for list all with pagination films"""
+        film_list = get_list_of_films(page, repo=film_repo)
+        return jsonify(film_list)
+
+
+@apifilms.route("/<int:page>/filtered=director", methods=["POST"])
+class FilmFilteredDirector(Resource):
+    @apifilms.expect(filter_director)
+    @login_required
+    def post(self, page):
+        """Filter films director"""
+        films_query = get_list_of_films_by_director(
+            page=page, request_json=request.json["director"], repo=film_repo
+        )
+        return jsonify(films_query)
+
+
+@apifilms.route("/<int:page>/filtered=genre", methods=["POST"])
+class FilmFilteredGenre(Resource):
+    @apifilms.expect(filter_genre)
+    @login_required
+    def post(self, page):
+        """Filters films by range of genre"""
+        films_query = get_list_of_films_by_genre(
+            page, request.json["genre"], repo=film_repo
+        )
+        return jsonify(films_query)
+
+
+@apifilms.route("/<int:page>/filtered=date", methods=["POST"])
+class FilmFilteredDate(Resource):
+    @apifilms.expect(filter_date)
+    @login_required
+    def post(self, page):
+        """Filters films by range of dates"""
+        films_query = get_list_of_films_by_date(
+            page,
+            left_date=request.json["left_date"],
+            right_date=request.json["right_date"],
+            repo=film_repo,
+        )
+        return jsonify(films_query)
+
+
+@apifilms.route("/<int:page>/sort=rate", methods=["GET"])
+class FilmSortedByRate(Resource):
+    @login_required
+    def post(self, page):
+        """Sort films by premier date and rate"""
+        sort_result = get_list_sorted_by_field(page=page, field="rate", repo=film_repo)
+        return jsonify(sort_result)
+
+
+@apifilms.route("/<int:page>/sort=premier_date", methods=["GET"])
+class FilmSortedByPremier(Resource):
+    @login_required
+    def get(self, page):
+        """Sort films by premier date and rate"""
+        sort_result = get_list_sorted_by_field(
+            page=page, field="premier_date", repo=film_repo
+        )
+        return jsonify(sort_result)
 
 
 @apimethods.route("/create", methods=["POST"])
@@ -137,9 +161,10 @@ class FilmCreate(Resource):
             }
             directors = request.json["directors"]
             genres = request.json["genres"]
-            film = add_film(film, directors, genres)
-            print(dir(film))
-            return jsonify(film.dict())
+            film = add_film(
+                film=film, directors=directors, genres=genres, repo=film_repo
+            )
+            return jsonify(film)
 
 
 @apimethods.route("/film/upd=<int:film_id>", methods=["PUT"])
@@ -155,7 +180,7 @@ class FilmUpdate(Resource):
             return "Dont have permissions"
         upd_data = request.get_json()
         edit = edit_films_info(film_id=film_id, upd_data=upd_data)
-        return jsonify(edit.dict())
+        return jsonify(edit)
 
 
 @apimethods.route("/film/del=<int:film_id>", methods=["DELETE"])
@@ -168,33 +193,33 @@ class FilmDelete(Resource):
         except Exception as e:
             current_app.logger.warning({f"{e}"})
             return "Dont have permissions"
-        drop_db_film(film_id)
+        drop_db_film(repo=film_repo, id_=film_id)
         return jsonify({"msg": "Dropped"})
 
 
-@apimethods.route("/film/<int:film_id>/director/<int:director>", methods=["DELETE"])
+@apimethods.route("/film/<int:film_id>/del=director", methods=["DELETE"])
 class DirectorDelete(Resource):
     @login_required
-    def delete(self, film_id, director):
+    def delete(self, film_id):
         """Delete director"""
         try:
             current_user.is_admin is True or current_user.is_active is True
         except Exception as e:
             current_app.logger.warning({f"{e}"})
             return "Dont have permissions"
-        set_unknown_director(film_id, director)
-        return jsonify({"msg": "Dropped"})
+        data = delete_director(repo=director_repo, film_id=film_id)
+        return jsonify({"director": data})
 
 
-@apimethods.route("/film/<int:film_id>/genre/<int:genre>", methods=["DELETE"])
+@apimethods.route("/film/<int:film_id>/del=genre", methods=["DELETE"])
 class GenreDelete(Resource):
     @login_required
-    def delete(self, film_id, genre):
+    def delete(self, film_id):
         """Delete genre"""
         try:
             current_user.is_admin is True or current_user.is_active is True
         except Exception as e:
             current_app.logger.warning({f"{e}"})
             return "Dont have permissions"
-        set_unknown_genre(film_id, genre)
-        return jsonify({"msg": "Dropped"})
+        data = set_unknown_genre(film_id, repo=genre_repo)
+        return jsonify({"genre": data})

@@ -1,10 +1,10 @@
 from flask import Flask, url_for
-from config import DevConfig
-from main.models import db, User, migrate
+from config import DevConfig, TestConfig
+from src.models import db, User, migrate
 from flask_login import LoginManager
-from main.cli import COMMANDS
-from main.log_config import log_config
-from main.routes import api
+from src.cli import COMMANDS
+from src.log_config import log_config
+from src.routes import api
 
 LOG_MGR = LoginManager()
 
@@ -17,6 +17,8 @@ def create_app():
     app = Flask(__name__)
     if app.config["ENV"] == "development":
         app.config.from_object(DevConfig)
+    if app.config["ENV"] == "testing":
+        app.config.from_object(TestConfig)
     LOG_MGR.init_app(app)
     LOG_MGR.login_view = "/Login"
     db.init_app(app)

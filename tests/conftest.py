@@ -20,5 +20,7 @@ def client():
 def app_with_db(client):
     """Fixture with empty test database"""
     db.create_all()
+    db.session.commit()
     yield client
+    db.session.remove()
     db.drop_all()

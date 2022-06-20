@@ -40,11 +40,11 @@ class FilmsCRUD(CRUDBase[Film, FilmSchema, FilmSchema], CRUDFilmBase):
         for field in db_obj.as_dict().keys():
             if field in obj_in:
                 setattr(db_obj, field, obj_in[field])
-                if "directors" not in obj_in.keys() or len(obj_in.keys()) == 0:
+                if "directors" not in obj_in.keys():
                     director = unknown_director(db_=db_)
                     db_obj.directors.clear()
                     db_obj.directors.append(director)
-                if "genres" not in obj_in.keys() or len(obj_in.keys()) == 0:
+                if "genres" not in obj_in.keys():
                     genre = unknown_genre(db_=db_)
                     db_obj.genres.clear()
                     db_obj.genres.append(genre)

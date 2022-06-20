@@ -5,10 +5,8 @@ services:
   testdb:
     image: postgres:14
     restart: always
-    environment:
-      POSTGRES_DB: testdata
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
+    env_file:
+      - .env.test
     ports:
       - "5432:5432"
     healthcheck:
@@ -22,7 +20,7 @@ services:
       FLASK_ENV: testing
       FLASK_DEBUG: True
     env_file:
-      - .env_test
+      - .env.test
     ports:
       - "5000:5000"
     volumes:

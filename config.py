@@ -25,7 +25,7 @@ class DevConfig(Config):
 class TestConfig(Config):
     """Test config."""
 
-    load_dotenv(path.join(basedir, ".env_test"), override=True)
+    load_dotenv(path.join(basedir, ".env.test"), override=True)
     TESTING = getenv("TESTING")
     SQLALCHEMY_DATABASE_URI = getenv("SQLALCHEMY_DATABASE_URI")
     SECRET_KEY = getenv("SECRET_KEY")

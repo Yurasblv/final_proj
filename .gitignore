@@ -1,8 +1,8 @@
 .idea
 .env
+.env.test
 Pipfile.lock
 __pycache__
 .gitignore
 logs
 .pytest_cache
-.env_test

@@ -5,8 +5,10 @@ services:
   testdb:
     image: postgres:14
     restart: always
-    env_file:
-      - .env_test
+    environment:
+      POSTGRES_DB: testdata
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
     ports:
       - "5432:5432"
     healthcheck:
@@ -17,8 +19,8 @@ services:
       dockerfile: Dockerfile
       context: .
     environment:
-      - FLASK_ENV=testing
-      - FLASK_DEBUG=1
+      FLASK_ENV: testing
+      FLASK_DEBUG: True
     env_file:
       - .env_test
     ports:

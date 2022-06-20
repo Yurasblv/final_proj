@@ -1,16 +1,17 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, redirect
 from config import DevConfig, TestConfig
 from src.models import db, User, migrate
 from flask_login import LoginManager
 from src.cli import COMMANDS
 from src.log_config import log_config
-from src.routes import api
+from src.routes import api, api_bp
 
 LOG_MGR = LoginManager()
 
 
 def register_blueprint(app):
     app.register_blueprint(COMMANDS)
+    app.register_blueprint(api_bp)
 
 
 def create_app():
@@ -35,6 +36,6 @@ def create_app():
 
     @LOG_MGR.unauthorized_handler
     def unauthorized():
-        return url_for(endpoint="/Login")
+        return redirect(url_for(endpoint="authentication"))
 
     return app

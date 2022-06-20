@@ -2,6 +2,7 @@ from src.models import *
 from sqlalchemy import and_
 from typing import List, Union
 from src.crud.abs import CreateSchemaType, ModelType
+from flask import abort
 
 
 def get_id_by_name(username) -> int:
@@ -81,3 +82,9 @@ def unknown_director(db_: db.session) -> Director:
 def unknown_genre(db_: db.session) -> Director:
     """Method returns unknown genre model"""
     return db_.session.query(Genre).filter(Genre.genre_name == "unknown").first()
+
+
+def login_required(user, app):
+    if not user.is_authenticated:
+        app.logger.info("Declined permission")
+        raise abort(401, "Log in system please!")

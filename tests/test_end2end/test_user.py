@@ -1,3 +1,4 @@
+"""Test module for user"""
 import pytest
 
 
@@ -14,7 +15,7 @@ def test_register_user(app_with_db, user_data):
         app_with_db.post("/registration/", json=user_data)
 
 
-@pytest.fixture()
+@pytest.fixture
 def admin_data():
     return dict(username="ADMIN123456", password="ADMPASS1", is_admin=True)
 
@@ -27,12 +28,12 @@ def test_register_admin(app_with_db, admin_data):
         app_with_db.post("/registration/", json=admin_data)
 
 
-@pytest.fixture()
+@pytest.fixture
 def incorrect_user_data_1():
     return dict(username="U1", password="2", is_admin=False)
 
 
-@pytest.fixture()
+@pytest.fixture
 def incorrect_user_data_2():
     return dict(username="USernAme1345", password="11", is_admin=False)
 
@@ -84,8 +85,20 @@ def test_incorrect_user(
 
 
 def test_login_admin_role(app_with_db, admin_data):
-    response = app_with_db.post("/login/", json=admin_data)
+    app_with_db.post("/registration/", json=admin_data)
+    response = app_with_db.post("/authentication/", json=admin_data)
     assert response.status_code == 200
     repeat_data = admin_data
-    response2 = app_with_db.post("/login/", json=repeat_data)
+    response2 = app_with_db.post("/authentication/", json=repeat_data)
     assert response2.json == {"msg": "already logged"}
+
+
+def test_logout(app_with_db, user_data):
+    app_with_db.post("/registration/", json=user_data)
+    app_with_db.post("/authentication/", json=user_data)
+    response = app_with_db.get("/logout/")
+    assert response.status_code == 200
+    assert response.json == {"msg": "Logged out"}
+    response = app_with_db.get("/logout/")
+    assert response.status_code == 200
+    return app_with_db

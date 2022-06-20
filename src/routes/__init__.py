@@ -1,7 +1,9 @@
 from flask_restx import Api
 from src.routes.user.routes import apiuser, apilogout, apiregister
 from src.routes.film.routes import apifilms, apimethods
+from flask import Blueprint
 
+api_bp = Blueprint('api', __name__)
 api = Api(title="MyAPI", version="1.0", description="My simple RESTAPI")
 
 api.add_namespace(apiregister)

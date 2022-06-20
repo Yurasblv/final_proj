@@ -1,7 +1,7 @@
 """Route module for user and admin operations"""
 from flask import request, jsonify
 from src.services.user import user_create, auth_user
-from flask_login import login_required, current_user, logout_user, login_user
+from flask_login import current_user, logout_user, login_user
 from flask import current_app
 from flask_restx import Resource, Namespace, fields
 from pydantic import ValidationError
@@ -57,9 +57,8 @@ class Login(Resource):
 
 
 @apilogout.route("/", methods=["GET"])
-@apilogout.response(200, description="Logged out")
 class Logout(Resource):
-    @login_required
+    @apilogout.response(200, description='Done')
     def get(self):
         """Route for user or admin log out process"""
         logout_user()
